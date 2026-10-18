@@ -1,0 +1,22 @@
+OLEOSENCE — AŽURIRANJE POSTOJEĆEG TESTNOG SERVISA V2
+
+Ova verzija zamenjuje prethodni paket v1. Imejl gosta je obavezan, bez obavezne registracije.
+
+Ovaj paket je samo za postojeći olesence-test repozitorijum i već napravljeni testni servis. Ne postavljati ga u repozitorijum glavnog sajta i ne praviti nove Render resurse.
+
+1. Raspakujte ovaj spoljašnji ZIP na računaru.
+2. U GitHub repozitorijumu Slobo99/olesence-test otvorite postojeći folder:
+   Oleosence-PostgreSQL-test-setup-compact/isolated-cod-test
+3. Iz raspakovanog foldera isolated-cod-test prevucite sve fajlove u taj GitHub folder i sačuvajte jednu izmenu. Uključite source.zip; njega NE raspakujte. Postojeći render.yaml i druga nepovezana dokumenta ostaju u repozitorijumu.
+4. Posle odobrenja, pokrenite objavu samo postojećeg testnog servisa. Build i Start komande ostaju iste. Nisu potrebni novi server, baza, Google podešavanja ili dodatni zakup.
+5. Provera je završena tek kada /healthz prikaže state: passed i sve provere passed. Ako piše failed ili running, ne koristiti to kao potvrdu za glavnu prodavnicu.
+
+ŠTA SE PROVERAVA
+Nova, izdvojena šema u postojećoj testnoj PostgreSQL bazi: migracija starih porudžbina, gostujuće sesije, istovremena kupovina poslednjeg komada, ponavljanje istog zahteva, ograničenja posle ponovnog kreiranja servisa, privatnost potvrda i bezbedno čišćenje isteklih sesija. Pravi HTTP zahtevi rade samo unutar testnog servisa; podaci su izmišljeni.
+
+Javna probna stranica ostaje sintetička: fiksni izmišljeni kontakt, bez stvarne porudžbine, prijave, mejla ili naplate. Služi za pregled izgleda gostujuće kupovine; ne šalje porudžbine u bazu. Google je namerno nedostupan u toj probi. Probna stranica se otvara tek nakon uspešnih testova.
+
+Glavna prodavnica se ovim paketom ne menja. Izvorna verzija za gostujuću kupovinu u source.zip ostaje identična pregledanom paketu:
+f73c5c5909aa0630421491f7aa0cc84c5604b534cfd1c791249bae2fcc6b0cea
+
+Lokalno su provereni izvorni paket (190 testova), raspakivanje, zaštite testnog servisa i sintetički interfejs. Novi testovi stvarne PostgreSQL konkurentnosti još nisu izvršeni na Renderu; ovaj paket ih priprema.
