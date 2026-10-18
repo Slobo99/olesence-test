@@ -1,11 +1,12 @@
 import http from 'node:http';
+import {fixtureResponse} from './fixture-server.mjs';
 import assert from 'node:assert/strict';
 import {randomUUID,createHash} from 'node:crypto';
 import {readFile} from 'node:fs/promises';
 import pg from './app/node_modules/pg/lib/index.js';
 const expected='olesence_cod_test_20261017';
 const report={state:'starting',checks:[],productionAccess:false};
-const server=http.createServer((req,res)=>{res.setHeader('Content-Type','application/json');res.setHeader('Cache-Control','no-store');if(req.url!=='/healthz'){res.writeHead(404);return res.end('{}');}res.writeHead(report.state==='failed'?503:200);res.end(JSON.stringify(report));});
+const server=http.createServer(async(req,res)=>{try{if(await fixtureResponse(req,res))return;}catch{res.writeHead(503,{'Content-Type':'text/plain'});res.end('Synthetic preview unavailable.');return;}res.setHeader('Content-Type','application/json');res.setHeader('Cache-Control','no-store');if(req.url!=='/healthz'){res.writeHead(404);return res.end('{}');}res.writeHead(report.state==='failed'?503:200);res.end(JSON.stringify(report));});
 server.listen(Number(process.env.PORT||10000),'0.0.0.0');
 let pool,control;
 const pause=ms=>new Promise(r=>setTimeout(r,ms));

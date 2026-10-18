@@ -17,7 +17,7 @@ services:
     region: oregon
     rootDir: Oleosence-PostgreSQL-test-setup-compact/isolated-cod-test
     autoDeployTrigger: 'off'
-    buildCommand: node prepare-source.mjs && cd app && npm ci --ignore-scripts --no-audit --no-fund && npm run check && cd .. && node --test guard.test.mjs
+    buildCommand: node prepare-source.mjs && cd app && npm ci --ignore-scripts --no-audit --no-fund && npm run check && cd .. && node --test guard.test.mjs fixture.test.mjs
     startCommand: node run.mjs
     healthCheckPath: /healthz
     envVars:
