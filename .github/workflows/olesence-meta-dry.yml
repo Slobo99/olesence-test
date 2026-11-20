@@ -1,0 +1,29 @@
+name: Isolated Meta bridge DRY ONLY
+on:
+  push:
+    branches: [olesence-meta-smoke-20261119]
+permissions:
+  contents: read
+concurrency:
+  group: olesence-meta-dry
+  cancel-in-progress: false
+jobs:
+  dry:
+    if: github.repository == 'Slobo99/olesence-test' && github.ref == 'refs/heads/olesence-meta-smoke-20261119'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    container:
+      image: mcr.microsoft.com/playwright:v1.64.1-noble
+    defaults:
+      run:
+        working-directory: meta-smoke-dry
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Install exact browser library (browser already in official image)
+        run: npm install --ignore-scripts --no-audit --no-fund --package-lock=false
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+      - name: Validate dry invariants and run fully mocked browser
+        run: npm test
