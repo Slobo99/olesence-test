@@ -24,13 +24,13 @@ test('actual Chromium isolated bridge with mocked SDK, no external browser reque
  const context=await browser.newContext({serviceWorkers:'block'});const handled=[];
  await context.route('**/*',async route=>{
   const url=route.request().url();handled.push(url);
-  if(url===BASE+'/synthetic?PRIVATE_CANARY#PRIVATE_CANARY'||url===BASE+'/synthetic?PRIVATE_CANARY')return route.fulfill({contentType:'text/html',headers:{'Referrer-Policy':'no-referrer'},body:parent});
-  if(url===FRAME)return route.fulfill({contentType:'text/html',headers:{'Content-Security-Policy':csp,'Referrer-Policy':'no-referrer'},body:frame});
+  if(url===BASE+'/synthetic?PRIVATE_CANARY#PRIVATE_CANARY'||url===BASE+'/synthetic?PRIVATE_CANARY')return route.fulfill({contentType:'text/html; charset=utf-8',headers:{'Referrer-Policy':'no-referrer'},body:parent});
+  if(url===FRAME)return route.fulfill({contentType:'text/html; charset=utf-8',headers:{'Content-Security-Policy':csp,'Referrer-Policy':'no-referrer'},body:frame});
   if(url==='https://connect.facebook.net/en_US/fbevents.js')return route.fulfill({contentType:'application/javascript',body:mock});
   return route.abort();
  });
- const page=await context.newPage();await page.goto(BASE+'/synthetic?PRIVATE_CANARY#PRIVATE_CANARY');
- await page.waitForFunction(()=>window.result?.accepted===true);
+ const page=await context.newPage();const evidence=[];page.on('console',msg=>{if(msg.type()==='error')evidence.push(msg.text());});page.on('pageerror',err=>evidence.push(err.message));await page.goto(BASE+'/synthetic?PRIVATE_CANARY#PRIVATE_CANARY');
+ try{await page.waitForFunction(()=>window.result?.accepted===true,{},{timeout:12000});}catch(err){console.error(JSON.stringify({handled,evidence,frames:page.frames().map(frame=>frame.url()),parent:await page.evaluate(()=>window.result)}));throw err;}
  const f=page.frames().find(f=>f.url()===FRAME);assert.ok(f);
  const observed=await f.evaluate(()=>({calls:window.mockCalls,location:location.href,referrer:document.referrer,parentBlocked:(()=>{try{void parent.document;return false}catch{return true}})()}));
  assert.equal(observed.location,FRAME);assert.equal(observed.referrer,'');assert.equal(observed.parentBlocked,true);
